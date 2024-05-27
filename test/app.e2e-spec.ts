@@ -17,4 +17,8 @@ describe('AppController (e2e)', () => {
   it('app should be defined', () => {
     expect(app).toBeDefined();
   });
+
+  it('should load .env file', () => {
+    expect(process.env.NODE_ENV).toBeDefined();
+  });
 });

@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ApiModule } from './api';
+import { MemberModule } from './api/member/member.module';
 
 @Module({
   imports: [
@@ -13,13 +14,14 @@ import { ApiModule } from './api';
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        entities: [],
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true, // TODO: this is dangerous in production, will change it by use the migrations
         url: configService.get('DATABASE_URL'),
       }),
       inject: [ConfigService],
     }),
     ApiModule,
+    MemberModule,
   ],
   controllers: [],
   providers: [],

@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
+import { IsEqualTo } from '../../../shared/validators';
+
 export class CreateAuthDto {
   @ApiProperty()
   @IsEmail()
@@ -12,6 +14,6 @@ export class CreateAuthDto {
   password: string;
 
   @ApiProperty()
-  @IsString()
+  @IsEqualTo('password')
   passwordConfirmation: string;
 }

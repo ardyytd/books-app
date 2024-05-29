@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
+import { ApiBody } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { CreateAuthDto, SignInAuthDto } from './dtos';
@@ -17,13 +18,9 @@ export class AuthController {
     return this.authService.signIn(signInAuthDto);
   }
 
-  @Get('sign-out')
+  @ApiBody({ schema: { example: { email: '' } } })
+  @Post('sign-out')
   signOut(@Body('email') email: string) {
     return this.authService.signOut(email);
-  }
-
-  @Get('refresh-token')
-  refreshToken() {
-    return this.authService.refreshToken();
   }
 }

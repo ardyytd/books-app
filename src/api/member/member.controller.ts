@@ -39,4 +39,14 @@ export class MemberController {
   remove(@Param('id') id: string) {
     return this.memberService.remove(+id);
   }
+
+  // --- The core task ---
+
+  @Post(':memberId/books/:bookId/borrow')
+  async borrowBook(
+    @Param('memberId') memberId: number,
+    @Param('bookId') bookId: number,
+  ) {
+    return this.memberService.borrowBook(memberId, bookId);
+  }
 }

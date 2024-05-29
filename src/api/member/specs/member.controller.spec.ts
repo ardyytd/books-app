@@ -12,6 +12,7 @@ describe('MemberController', () => {
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    borrowBook: jest.fn(),
   };
 
   beforeAll(async () => {
@@ -56,6 +57,10 @@ describe('MemberController', () => {
     it('remove', () => {
       expect(controller.remove).toBeDefined();
     });
+
+    it('borrowBook', () => {
+      expect(controller.borrowBook).toBeDefined();
+    });
   });
 
   describe('controller methods should call service methods', () => {
@@ -93,6 +98,12 @@ describe('MemberController', () => {
       controller.remove('1');
 
       expect(memberServiceMock.remove).toHaveBeenCalledTimes(1);
+    });
+
+    it('borrowBook', () => {
+      controller.borrowBook(1, 1);
+
+      expect(memberServiceMock.borrowBook).toHaveBeenCalledTimes(1);
     });
   });
 });

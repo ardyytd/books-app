@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Borrow } from '../../borrow/entities/borrow.entity';
 
 @Entity({ name: 'members' })
 export class Member {
@@ -10,4 +12,13 @@ export class Member {
 
   @Column()
   name: string;
+
+  @Column({ name: 'is_penalized', default: false })
+  isPenalized: boolean;
+
+  @Column({ name: 'penalty_start_date', nullable: true })
+  penaltyEndDate: Date | null;
+
+  @OneToMany(() => Borrow, (borrow) => borrow.member)
+  borrows: Borrow[];
 }

@@ -16,7 +16,7 @@ export class Member {
   @Column({ name: 'is_penalized', default: false })
   isPenalized: boolean;
 
-  @Column({ name: 'penalty_start_date', nullable: true })
+  @Column({ name: 'penalty_end_date', nullable: true })
   penaltyEndDate: Date | null;
 
   @OneToMany(() => Borrow, (borrow) => borrow.member)

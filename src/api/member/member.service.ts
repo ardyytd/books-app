@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { Not, Repository, DataSource } from 'typeorm';
+import { Not, Repository, DataSource, QueryRunner, IsNull } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 
 import { CreateMemberDto, UpdateMemberDto } from './dtos';
@@ -146,5 +146,93 @@ export class MemberService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async returnBook(memberId: number, bookId: number) {
+    // Atomicity is ensured by using a transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const member = await queryRunner.manager.findOne(Member, {
+        where: { id: memberId },
+        lock: { mode: 'pessimistic_read' },
+      });
+      if (!member) {
+        throw new HttpException('Member not found', 404);
+      }
+
+      const book = await queryRunner.manager.findOne(Book, {
+        where: { id: bookId },
+        lock: { mode: 'pessimistic_read' },
+      });
+      if (!book) {
+        throw new HttpException('Book not found', 404);
+      }
+
+      const borrowBook = await queryRunner.manager.findOne(Borrow, {
+        where: { member, book, returnedAt: IsNull() },
+        lock: { mode: 'pessimistic_write' },
+      });
+      if (!borrowBook) {
+        throw new HttpException('Book not being borrowed', 400);
+      }
+
+      borrowBook.returnedAt = new Date();
+      await queryRunner.manager.save(borrowBook);
+
+      // Calculate the difference between the current date and the date the book was borrowed
+      const borrowedAt = new Date(borrowBook.borrowedAt);
+      const returnedAt = new Date(borrowBook.returnedAt);
+      const diffDays = this.calculateDaysBetweenDates(borrowedAt, returnedAt);
+      const isLate = this.isReturnLate(diffDays, 7);
+
+      if (isLate) {
+        await this.penalizeMember(queryRunner, member, 3);
+      }
+
+      // Increment the stock of the book
+      book.stock += 1;
+      await queryRunner.manager.save(book);
+
+      await queryRunner.commitTransaction();
+
+      return borrowBook;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  // utility function
+  private calculateDaysBetweenDates(startDate: Date, endDate: Date): number {
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  private isReturnLate(diffDays: number, allowedDays: number): boolean {
+    return diffDays > allowedDays;
+  }
+
+  private async penalizeMember(
+    queryRunner: QueryRunner,
+    member: Member,
+    penaltyDays: number,
+  ) {
+    const penaltyMilliseconds = penaltyDays * 24 * 60 * 60 * 1000;
+
+    if (member.isPenalized) {
+      member.penaltyEndDate = new Date(
+        member.penaltyEndDate.getTime() + penaltyMilliseconds,
+      );
+    } else {
+      member.isPenalized = true;
+      member.penaltyEndDate = new Date(Date.now() + penaltyMilliseconds);
+    }
+
+    await queryRunner.manager.save(member);
   }
 }

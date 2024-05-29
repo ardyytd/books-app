@@ -49,4 +49,12 @@ export class MemberController {
   ) {
     return this.memberService.borrowBook(memberId, bookId);
   }
+
+  @Post(':memberId/books/:bookId/return')
+  async returnBook(
+    @Param('memberId') memberId: number,
+    @Param('bookId') bookId: number,
+  ) {
+    return this.memberService.returnBook(memberId, bookId);
+  }
 }

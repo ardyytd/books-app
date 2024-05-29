@@ -214,5 +214,11 @@ describe('MemberService', () => {
         );
       });
     });
+
+    describe('returnBook', () => {
+      it('should defined', () => {
+        expect(service.returnBook).toBeDefined();
+      });
+    });
   });
 });

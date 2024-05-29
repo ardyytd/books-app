@@ -27,11 +27,6 @@ export class MemberService {
     return this.memberRepository.save(createMemberDto);
   }
 
-  findAll() {
-    // TODO: determine the upper and lower limit of the number of members to be taken
-    return this.memberRepository.find();
-  }
-
   async findOne(id: number) {
     const member = await this.memberRepository.findOne({ where: { id } });
     if (!member) {
@@ -76,6 +71,25 @@ export class MemberService {
   }
 
   // --- The core task ---
+
+  findAll() {
+    return this.memberRepository.find({
+      relations: ['borrows', 'borrows.book'],
+      select: [
+        'id',
+        'code',
+        'name',
+        'isPenalized',
+        'penaltyEndDate',
+        'borrows',
+      ],
+      where: {
+        borrows: {
+          returnedAt: IsNull(),
+        },
+      },
+    });
+  }
 
   async borrowBook(memberId: number, bookId: number) {
     // Atomicity is ensured by using a transaction

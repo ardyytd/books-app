@@ -8,8 +8,7 @@ import {
 import { ApiBody } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { CreateAuthDto, SignInAuthDto } from './dtos';
-import { SignOutAuthDto } from './dtos/sign-out-auth.dto copy';
+import { CreateAuthDto, SignInAuthDto, SignOutAuthDto } from './dtos';
 
 @Controller('auth')
 @UsePipes(ValidationPipe)

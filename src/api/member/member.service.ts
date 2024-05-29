@@ -111,7 +111,7 @@ export class MemberService {
       }
 
       const totalBorrows = await queryRunner.manager.count(Borrow, {
-        where: { member, returnedAt: null },
+        where: { member, returnedAt: IsNull() },
       });
       if (totalBorrows >= 2) {
         throw new HttpException('Maximum borrow limit reached', 400);
@@ -119,7 +119,7 @@ export class MemberService {
 
       // Borrowed books are not borrowed by other members
       const isBookBorrowed = await queryRunner.manager.findOne(Borrow, {
-        where: { book, returnedAt: null },
+        where: { book, returnedAt: IsNull() },
         lock: { mode: 'pessimistic_read' },
       });
       if (isBookBorrowed) {

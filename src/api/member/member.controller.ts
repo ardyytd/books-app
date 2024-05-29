@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { MemberService } from './member.service';
 
+import { MemberService } from './member.service';
 import { CreateMemberDto, UpdateMemberDto } from './dtos';
 
 @Controller('members')
+@UsePipes(ValidationPipe)
 export class MemberController {
   constructor(private readonly memberService: MemberService) {}
 

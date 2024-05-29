@@ -6,11 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
+
 import { BookService } from './book.service';
 import { CreateBookDto, UpdateBookDto } from './dtos';
 
 @Controller('books')
+@UsePipes(ValidationPipe)
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 

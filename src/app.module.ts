@@ -14,7 +14,6 @@ import { ApiModule } from './api';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // TODO: this is dangerous in production, will change it by use the migrations
         url: configService.get('DATABASE_URL'),
       }),
       inject: [ConfigService],

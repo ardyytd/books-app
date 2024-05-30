@@ -13,9 +13,6 @@ export class Member {
   @Column()
   name: string;
 
-  @Column({ name: 'is_penalized', default: false })
-  isPenalized: boolean;
-
   @Column({ name: 'penalty_end_date', nullable: true })
   penaltyEndDate: Date | null;
 

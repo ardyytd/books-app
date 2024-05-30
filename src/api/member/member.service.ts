@@ -72,23 +72,24 @@ export class MemberService {
 
   // --- The core task ---
 
-  findAll() {
-    return this.memberRepository.find({
-      relations: ['borrows', 'borrows.book'],
-      select: [
-        'id',
-        'code',
-        'name',
-        'isPenalized',
-        'penaltyEndDate',
+  async findAll() {
+    return await this.memberRepository
+      .createQueryBuilder('member')
+      .leftJoinAndSelect(
+        'member.borrows',
         'borrows',
-      ],
-      where: {
-        borrows: {
-          returnedAt: IsNull(),
-        },
-      },
-    });
+        'borrows.returnedAt IS NULL',
+      )
+      .leftJoinAndSelect('borrows.book', 'book')
+      .select([
+        'member.id',
+        'member.code',
+        'member.name',
+        'member.penaltyEndDate',
+        'borrows',
+        'book',
+      ])
+      .getMany();
   }
 
   async borrowBook(memberId: number, bookId: number) {
@@ -108,7 +109,9 @@ export class MemberService {
       }
 
       // Member is currently not being penalized
-      if (member.isPenalized) {
+      const isMemberPenalized =
+        member.penaltyEndDate && member.penaltyEndDate > new Date();
+      if (isMemberPenalized) {
         throw new HttpException('Member is being penalized', 400);
       }
 
@@ -238,12 +241,13 @@ export class MemberService {
   ) {
     const penaltyMilliseconds = penaltyDays * 24 * 60 * 60 * 1000;
 
-    if (member.isPenalized) {
+    const isMemberPenalized =
+      member.penaltyEndDate && member.penaltyEndDate > new Date();
+    if (isMemberPenalized) {
       member.penaltyEndDate = new Date(
         member.penaltyEndDate.getTime() + penaltyMilliseconds,
       );
     } else {
-      member.isPenalized = true;
       member.penaltyEndDate = new Date(Date.now() + penaltyMilliseconds);
     }
 

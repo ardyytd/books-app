@@ -1,12 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Repository } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
+
 import { AuthService } from '../auth.service';
+import { Auth } from '../entities/auth.entity';
 
 describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
+      providers: [
+        AuthService,
+        {
+          provide: getRepositoryToken(Auth),
+          useValue: Repository,
+        },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
@@ -27,10 +37,6 @@ describe('AuthService', () => {
 
     it('signOut', () => {
       expect(service.signOut).toBeDefined();
-    });
-
-    it('refreshToken', () => {
-      expect(service.refreshToken).toBeDefined();
     });
   });
 });

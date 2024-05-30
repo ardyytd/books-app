@@ -42,10 +42,6 @@ describe('AuthController', () => {
     it('signOut', () => {
       expect(controller.signOut).toBeDefined();
     });
-
-    it('refreshToken', () => {
-      expect(controller.refreshToken).toBeDefined();
-    });
   });
 
   describe('controller methods should call service methods', () => {
@@ -69,13 +65,8 @@ describe('AuthController', () => {
     });
 
     it('signOut', () => {
-      controller.signOut('mail@mail.com');
+      controller.signOut({ email: 'mail@mail.com' });
       expect(authService.signOut).toHaveBeenCalledTimes(1);
-    });
-
-    it('refreshToken', () => {
-      controller.refreshToken();
-      expect(authService.refreshToken).toHaveBeenCalledTimes(1);
     });
   });
 });

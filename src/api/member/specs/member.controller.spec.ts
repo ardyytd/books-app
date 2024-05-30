@@ -85,13 +85,13 @@ describe('MemberController', () => {
     });
 
     it('findOne', () => {
-      controller.findOne('1');
+      controller.findOne(1);
 
       expect(memberServiceMock.findOne).toHaveBeenCalledTimes(1);
     });
 
     it('update', () => {
-      controller.update('1', {
+      controller.update(1, {
         code: 'code',
         name: 'name',
       });
@@ -100,7 +100,7 @@ describe('MemberController', () => {
     });
 
     it('remove', () => {
-      controller.remove('1');
+      controller.remove(1);
 
       expect(memberServiceMock.remove).toHaveBeenCalledTimes(1);
     });

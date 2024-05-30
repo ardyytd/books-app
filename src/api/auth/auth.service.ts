@@ -50,7 +50,7 @@ export class AuthService {
       );
     }
 
-    if (!this.comparePassword(user.password, signInAuthDto.password)) {
+    if (!this.comparePassword(signInAuthDto.password, user.password)) {
       throw new HttpException(
         'Make sure your email and password are correct',
         401,

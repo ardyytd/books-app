@@ -26,6 +26,7 @@ describe('App (e2e)', () => {
   it('should load .env file', () => {
     expect(process.env.NODE_ENV).toBeDefined();
     expect(process.env.DATABASE_URL).toBeDefined();
+    expect(process.env.PASSWORD_SALT).toBeDefined();
   });
 
   it('should connect to database', () => {
